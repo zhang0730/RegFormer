@@ -1,0 +1,22 @@
+pandas
+scvi-tools
+scanpy
+torch
+torchtext
+numba
+scikit-misc
+umap-learn
+leidenalg
+datasets
+typing-extensions
+scib = "^1.0.3"
+cell-gears = "<0.0.3"
+orbax = "<0.1.8"
+pytest = "^5.2"
+black = "^22.3.0"
+tensorflow = "^2.8.0"
+flash-attn = "^1.0.1"
+torch-geometric = "^2.3.0"
+dcor = "~0.5.3"
+wandb = "^0.12.3"
+plotly

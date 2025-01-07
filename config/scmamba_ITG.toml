@@ -1,0 +1,65 @@
+task='Integration'
+data_name="hPancreas"   #["purified_pbmc",'PBMC10K',"pancreas","perirhinal","covid","humanDC","hPBMC","hPancreas"]
+model_name = "mamba"    #['gpt','mamba','bimamba']
+run_name='debug'    #name of experiment.
+do_train=false  #Train or inference
+bimamba_type='none'     #type of bimamba: ['v1','v2','none']
+graph_sort=true     #using graph topological sorting
+layer_emb=false     #using layer when using graph sort
+distributed=false   #current script is unavailable for distributed training, always set to false plz
+
+MLM=false   #whether to use masked language modeling
+CCE=false   #contrastive cell embedding objective
+CLS=true    #celltype classification objective
+cls_weight=true #using different weights for different classes during loss bp
+dab_weight=1.0  #weight of dab, set to 0.0 to turn off
+
+epochs=1
+test_size=0.2
+lr=1e-4
+seed=42
+dropout=0.2
+batch_size=64
+layer_size=128
+nlayers=4
+mask_ratio=0.0
+pre_norm=false  #normalize previously
+freeze=false    #freeze the backbone during finetuning
+log_interval=10
+save_eval_interval=5
+schedule_ratio=0.9      #ratio of epochs for learning rate schedule
+amp=true    #Automatic Mixed Precision
+
+#######dir
+data_path='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/data'
+#load_model="/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves/Pretraining/cellxgene/mamba/gst_ori_initemb"    #from_scratch: "none"
+load_model='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves/Pretraining/cellxgene/Mamba/wogts_mlm_mamba'
+save_dir='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves'  #Directory of checkpoint and result to save
+vocab_file='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/ckpts/whole_human/vocab.json'
+graph_path='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/graph'
+
+#######data config
+cell_type_column='celltype'
+batch_column='batch'
+gene_column='none'  #set to "none" or specific column-name based on your requirement
+do_umap=false        #output umap or not
+out_pdf=false        #output pdf
+save_to='none'      #add to embedding of model into adata and save to given path, set to "none" to turn off
+umap_column='X_umap'    #set to "none" or specific column-name based on your requirement
+pca_column='X_pca'      #set to "none" or specific column-name based on your requirement
+data_is_raw=false
+filter_gene_by_counts=false
+DSBN=true
+
+input_emb_style='continuous'    #the style of input emb：['continuous','category','scaling']
+n_hvg=-1                # whether to subset the raw data to highly variable genes. -1: turn off hvg, positive: number of hvg
+cell_emb_style='attn'   #method for generating cell emb: ['final','cls','avg-pool','w-pol','attn']
+n_bins=51
+append_cls=false    #append <cls> token as first token
+per_seq_batch_sample=false      #whether sort the adata by batch_id
+include_zero_gene=false     #whether include gene with zero expression value
+input_style='binned'       #input representation: ['binned','normed_raw','log1p']
+output_style='binned'       #output representation: ['binned','normed_raw','log1p']
+max_seq_len=3000
+
+
