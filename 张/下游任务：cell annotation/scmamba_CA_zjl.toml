@@ -1,0 +1,58 @@
+task='Cell_annotation'
+data_name='SGA_HSPC_for_finetune'   #['ms','mye','pancreas','zheng68k','liver','SI','kidney','blood']
+model_name = "mamba"    #['gpt','mamba','bimamba']
+run_name='debug'    #name of experiment.
+do_train=true   #Train or inference
+bimamba_type='none'     #type of bimamba: ['v1','v2','none']
+graph_sort=false     #using graph topological sorting
+layer_emb=false     #using layer when using graph sort
+distributed=false   #current script is unavailable for distributed training, always set to false plz
+
+MLM=false   #whether to use masked language modeling
+CCE=false   #contrastive cell embedding objective
+CLS=true    #celltype classification objective
+cls_weight=true #using different weights for different classes during loss bp
+
+epochs=1
+test_size=0.2
+lr=1e-4
+seed=42
+dropout=0.2
+batch_size=64
+layer_size=128
+nlayers=4
+mask_ratio=0.0
+pre_norm=false  #normalize previously
+freeze=false    #freeze the backbone during finetuning
+log_interval=10
+save_eval_interval=5
+schedule_ratio=0.9      #ratio of epochs for learning rate schedule
+amp=true    #Automatic Mixed Precision
+
+#######dir
+data_path='/disk2/cai045/RegFormer/finetune_data/'
+load_model="/disk2/cai045/RegFormer/try/output/Pretraining/panglao/mamba/try"    #from_scratch: "none"
+save_dir='/disk2/cai045/RegFormer/try/output/'  #Directory of checkpoint and result to save
+vocab_file='/disk2/cai045/RegFormer/doc/vocab.json'
+graph_path='none'
+
+#######data config
+cell_type_column='celltype'
+batch_column='batch'
+gene_column='none'  #set to "none" or specific column-name based on your requirement
+umap_column='none'    #set to "none" or specific column-name based on your requirement
+pca_column='none'      #set to "none" or specific column-name based on your requirement
+data_is_raw=false
+filter_gene_by_counts=false
+
+input_emb_style='continuous'    #the style of input emb:['continuous','category','scaling']
+cell_emb_style='attn'   #method for generating cell emb: ['final','cls','avg-pool','w-pol','attn']
+n_bins=51
+append_cls=false    #append <cls> token as first token
+per_seq_batch_sample=false      #whether sort the adata by batch_id
+include_zero_gene=false     #whether include gene with zero expression value
+input_style='binned'       #input representation: ['binned','normed_raw','log1p']
+output_style='binned'       #output representation: ['binned','normed_raw','log1p']
+max_seq_len=3000
+
+

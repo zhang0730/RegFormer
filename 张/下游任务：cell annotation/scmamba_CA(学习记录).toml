@@ -1,0 +1,62 @@
+task='Cell_annotation'   #任务类型（细胞类型分类）
+data_name='zheng68k'   #['ms','mye','pancreas','zheng68k','liver','SI','kidney','blood']使用的数据集（68K PBMC细胞数据集）
+model_name = "mamba"    #['gpt','mamba','bimamba']	模型架构（Mamba状态空间模型）
+run_name='debug'    #name of experiment.
+do_train=true   #Train or inference  启用训练模式（可改为false进行推理）
+                 #do_train=true 需要训练新模型或微调时（如更换数据集、调整超参数、从头训练）
+                 #do_train=false 模型已训练好，仅需推理或评估时（如测试已有模型在新数据上的表现、生成预测结果）。
+bimamba_type='none'     #type of bimamba: ['v1','v2','none'] 禁用双向Mamba
+graph_sort=false     #using graph topological sorting 禁用基因图拓扑排序（与整合任务不同）
+layer_emb=false     #using layer when using graph sort  禁用图层嵌入
+distributed=false   #current script is unavailable for distributed training, always set to false plz
+
+MLM=false   #whether to use masked language modeling  禁用掩码语言建模（非预训练任务）
+CCE=false   #contrastive cell embedding objective  	禁用对比学习
+CLS=true    #celltype classification objective  核心目标：启用细胞类型分类
+cls_weight=true #using different weights for different classes during loss bp  对稀有细胞类型加权（解决类别不平衡）
+
+
+epochs=1  #	仅1个epoch（调试模式，实际需增加）
+test_size=0.2   #测试集占20%
+lr=1e-4  #较低学习率（适合微调）
+seed=42
+dropout=0.2
+batch_size=64  #	每批次64个细胞
+layer_size=128
+nlayers=4
+mask_ratio=0.0
+pre_norm=false  #normalize previously
+freeze=false    #freeze the backbone during finetuning  微调时不冻结主干网络
+log_interval=10
+save_eval_interval=5
+schedule_ratio=0.9      #ratio of epochs for learning rate schedule
+amp=true    #Automatic Mixed Precision  混合精度训练加速
+
+#######dir
+data_path='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/data'  #这里是放微调数据的  就是h5ad 对obs有要求
+load_model="/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves/Pretraining/cellxgene/mamba/gst_ori_initemb"    #from_scratch: "none"  关键：加载预训练Mamba模型
+save_dir='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves'  #Directory of checkpoint and result to save
+vocab_file='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/ckpts/whole_human/vocab.json'  #基因词汇表（与预训练模型一致）
+graph_path='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/graph'
+
+#######data config
+cell_type_column='celltype'  #指定细胞类型标签列
+batch_column='batch'
+gene_column='none'  #set to "none" or specific column-name based on your requirement
+umap_column='TSNE'    #set to "none" or specific column-name based on your requirement 	可视化时使用t-SNE坐标（非UMAP）
+umap_column='TSNE'    #set to "none" or specific column-name based on your requirement
+pca_column='none'      #set to "none" or specific column-name based on your requirement
+data_is_raw=false
+filter_gene_by_counts=false
+
+input_emb_style='continuous'    #the style of input emb：['continuous','category','scaling']
+cell_emb_style='attn'   #method for generating cell emb: ['final','cls','avg-pool','w-pol','attn'] 	使用注意力机制生成细胞嵌入
+n_bins=51    #表达量分箱数（0-50共51档）
+append_cls=false    #append <cls> token as first token
+per_seq_batch_sample=false      #whether sort the adata by batch_id
+include_zero_gene=false     #whether include gene with zero expression value
+input_style='binned'       #input representation: ['binned','normed_raw','log1p']  输入为分箱表达量（0-50整数）
+output_style='binned'       #output representation: ['binned','normed_raw','log1p']  输出类型同输入类型一样
+max_seq_len=3000    #	每个细胞最多考虑3000个基因
+
+
