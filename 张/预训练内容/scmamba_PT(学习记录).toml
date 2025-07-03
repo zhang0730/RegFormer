@@ -1,0 +1,69 @@
+task='Pretraining' ## 保持为预训练任务
+data_name='cellxgene'   #['panglao','cellxgene'] 你的数据集名称
+model_name = "mamba"    #['gpt','mamba','bimamba']
+run_name='debug'    #name of experiment. 实验名称，用于标识不同实验
+do_train=true   #Train or inference
+bimamba_type='none'     #type of bimamba: ['v1','v2','none'] 双向Mamba类型：'none'/'v1'/'v2'
+graph_sort=true     #using graph topological sorting  是否使用基因拓扑排序信息
+distributed=false   #current script is unavailable for distributed training, always set to false plz 是否使用分布式训练
+
+MLM=false   #whether to use masked language modeling 是否使用掩蔽语言建模(基因表达值预测)
+MVC=false   #contrastive cell embedding objective 是否使用掩蔽值补全(基因表达值补全)
+generative_pretraining=false    #using generative token precidtion in pretraining or masked token prediction in pretraining 生成式预训练(True)或掩蔽式预训练(False)
+
+epochs=1 ## 训练轮数，根据数据量调整 这里设置为1 就是跑来debug 这里保持也不错
+test_size=0.2
+lr=1e-4 # 学习率，常用1e-4到1e-5
+seed=42 # 随机种子，确保可复现性
+dropout=0.2 # dropout率，防止过拟合
+batch_size=10 ## 批大小，根据GPU内存调整 如果宽裕可以设为16、32
+layer_size=128 # 每层隐藏单元数
+nlayers=4 # Mamba层数
+mask_ratio=0.4 # 掩蔽比例(0-1之间)
+pre_norm=false  #normalize previously  是否使用预归一化
+freeze=false    #freeze the backbone during finetuning
+log_interval=10  # 日志记录间隔(批次数)
+save_eval_interval=5  # 模型保存间隔(epoch数)
+schedule_ratio=0.9      #ratio of epochs for learning rate schedule
+amp=true    #Automatic Mixed Precision 自动混合精度训练，加速训练
+token_emb_freeze=false      #freezing token-emb when predicting value  是否冻结token嵌入
+sampling_etype='ori'     #choice of edge type when sampling: ['share_pathway_with','interact_with','co_expression','ori']
+layer_mask=false        #using layer mask or not when using graph sort  是否使用分层掩蔽
+layer_emb=false         # using layer emb or not when using graph sort  是否使用分层嵌入
+
+#######dir 数据路径配置
+data_path='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/data' #这个是啥？
+load_model="/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves/Pretraining/cellxgene/mamba/gst_ori_initemb"    #from_scratch: "none" 这里我要设置为"none"
+save_dir='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/saves'  #Directory of checkpoint and result to save #这个自己改
+vocab_file='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/ckpts/whole_human/vocab.json' #作者给了
+graph_path='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/graph' #这个没有 是不是图排序设置成false就行
+gene_array_file='/home/share/huadjyin/home/s_jiangwenjian/proj/scLLM/scGPT/data/Pretraining/panglao/binned/panglao_gene_ids.pk' #Path of vocab, available if load_model is None 作者给了
+lmdb=true       # use lmdb dataset or not 我用的也是lmdb
+lmdb_path='/home/share/huadjyin/home/s_qiuping1/workspace/omics_model/data/train_data/cellxgene_6w' #Path of source lmdb&h5ad data 这里要修改
+
+#######data config 
+cell_type_column='celltype' # 细胞类型列名
+batch_column='batch' # 批次信息列名
+gene_column='none'  #set to "none" or specific column-name based on your requirement
+umap_column='TSNE'    #set to "none" or specific column-name based on your requirement
+pca_column='none'      #set to "none" or specific column-name based on your requirement
+data_is_raw=false
+filter_gene_by_counts=false
+DSBN=false #是否使用域特定批归一化
+
+input_emb_style='continuous'    #the style of input emb：['continuous','category','scaling']
+cell_emb_style='attn'   #method for generating cell emb: ['final','cls','avg-pool','w-pol','attn']
+mvc_decoder_style='inner product'   #architecture style of the decoder:['inner product','concat query','sum query']
+n_bins=51
+append_cls=false    #append <cls> token as first token
+per_seq_batch_sample=false      #whether sort the adata by batch_id
+include_zero_gene=false     #whether include gene with zero expression value 是否包含零表达基因
+input_style='binned'       #input representation: ['binned','normed_raw','log1p'] 输入数据格式：'binned'/'normed_raw'/'log1p'
+output_style='binned'       #output representation: ['binned','normed_raw','log1p'] 输出数据格式
+max_seq_len=3000          # 最大序列长度(基因数量)
+
+
+#修改配置文件后，只需运行主脚本即可开始训练：
+#python pretrain_task_mamba.py#
+
+#记得根据你的硬件条件(特别是GPU内存)调整batch_size，并根据数据集大小调整epochs和max_seq_len。
